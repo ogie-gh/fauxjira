@@ -29,33 +29,6 @@ def get_mapping(config_data, team_name):
     return None
 
 
-def generate_json(team, summary, description, labels):
-    json_structure = {
-        "fields": {
-            "project": {"key": team},
-            "issuetype": {"id": '10002'},
-            "summary": summary,
-            "description": {
-                "version": 1,
-                "type": "doc",
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": description,
-                            },
-                        ],
-                    },
-                ],
-            },
-            "labels": labels,
-        },
-    }
-    return json_structure
-
-
 @click.command()
 @click.option('--team', help="The team you want to raise a Jira to", required=True)
 @click.option('--json-input', type=click.STRING)
@@ -67,13 +40,6 @@ def main(team, json_input):
             if mapping_data is not None:
                 config_key = mapping_data['key']
                 config_labels = mapping_data.get('labels', [])
-                json_data = json.loads(json_input)
-                summary = json_data.get('summary', '')
-                description = json_data.get('description', '')
-                result = generate_json(config_key, summary, description, config_labels)
-                print(json.dumps(result, indent=2))
-    except json.JSONDecodeError:
-        print("Invalid JSON input.")
 
 
 if __name__ == '__main__':

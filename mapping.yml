@@ -1,0 +1,8 @@
+mapping:
+  TEST:
+    key: TST
+    labels: []
+    webhook: 'https://lol-webhook-4abf-a156-f0271c7041dd'
+  DERP:
+    key: DRP
+    labels: [mirp]

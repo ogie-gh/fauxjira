@@ -2,14 +2,10 @@ import click
 import json
 import os
 import yaml
-import csv
 
 def load_config():
-    gh_path = os.getenv('GITHUB_ACTION_PATH')
-    mapped_path = os.path.join(gh_path, 'mapping.yml')
-
     try:
-        with open(mapped_path, 'r') as config_file:
+        with open('mapping.yml', 'r') as config_file:
             config_data = yaml.safe_load(config_file)
         return config_data
     except FileNotFoundError:
@@ -28,7 +24,7 @@ def get_mapping(config_data, team_name):
     return None
 
 def load_template(template_name):
-    template_path = os.path.join(gh_path, 'templates', f'{template_name}.json')
+    template_path = os.path.join('templates', f'{template_name}.json')
     with open(template_path, 'r') as template_file:
         return json.load(template_file)
 
@@ -37,7 +33,6 @@ def create_jira_json(json_input):
         config_data = load_config()
         if config_data is not None:
             input_data = json.loads(json_input)
-
             # Initialize a list to store the generated Jira JSON for each input item
             jira_json_list = []
 

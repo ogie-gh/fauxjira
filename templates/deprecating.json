@@ -1,7 +1,7 @@
 {
   "fields": {
     "project": {
-      "key": <team>
+      "key": "{{team}}"
     },
     "issuetype": {
       "id": "10002"
@@ -25,7 +25,7 @@
           "content": [
             {
               "type": "text",
-              "text": "csv_contents"
+              "text": "{{csv_contents}}"
             }
           ]
         }

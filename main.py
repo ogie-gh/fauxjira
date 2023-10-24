@@ -2,7 +2,7 @@ import click
 import json
 import os
 import yaml
-import csv
+import requests
 
 def load_config():
     gh_path = os.getenv('GITHUB_ACTION_PATH')
@@ -36,7 +36,14 @@ def create_jira_json(json_input):
     try:
         config_data = load_config()
         if config_data is not None:
-            input_data = json.loads(json_input)
+            # Load the provided JSON input
+            if isinstance(json_input, str):
+                input_data = json.loads(json_input)
+            elif isinstance(json_input, list):
+                input_data = json_input
+            else:
+                print("Invalid input format.")
+                return None
 
             # Initialize a list to store the generated Jira JSON for each input item
             jira_json_list = []
@@ -72,17 +79,35 @@ def create_jira_json(json_input):
 
                     jira_json_list.append(template_data)
 
-            return json.dumps(jira_json_list, indent=4)
+            return jira_json_list
     except Exception as e:
         print(f"An error occurred: {str(e)}")
         return None
 
+def create_jira(jira_json_list):
+    auth = ('username', 'api_token')  # Replace with your Jira username and API token
+    base_url = 'https://your-jira-instance/rest/api/2/issue/'
+
+    issue_keys = []
+
+    for jira_json in jira_json_list:
+        response = requests.post(base_url, json=jira_json, auth=auth)
+
+        if response.status_code == 201:
+            issue_key = response.json()["key"]
+            issue_keys.append(issue_key)
+        else:
+            raise Exception(f"Failed to create issue: {response.text}")
+
+    return issue_keys
+
 @click.command()
 @click.option('--json-input', type=click.STRING, required=True)
 def main(json_input):
-    jira_json = create_jira_json(json_input)
-    if jira_json:
-        print(jira_json)
+    jira_json_list = create_jira_json(json_input)
+    if jira_json_list:
+        issue_keys = create_jira(jira_json_list)
+        print(f"Created Jira issues with keys: {issue_keys}")
 
 if __name__ == '__main__':
     main()

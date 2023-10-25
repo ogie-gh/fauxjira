@@ -2,7 +2,9 @@ import click
 import json
 import os
 import yaml
+import csv
 import requests
+from lib import template_validation as tv
 
 def load_config():
     gh_path = os.getenv('GITHUB_ACTION_PATH')
@@ -54,17 +56,28 @@ def create_jira_json(json_input):
                     print("Team value is not provided in one of the input items.")
                     continue
 
+                # Validate the input against the template
+                template_name = item.get('template')
+                template = load_template(template_name)
+                if not template:
+                    print(f"Template '{template_name}' not found.")
+                    continue
+
+                if not tv.validate_input(template, item):
+                    print(f"Validation failed for input in template '{template_name}'.")
+                    continue
+
                 mapping_data = get_mapping(config_data, team)
                 if mapping_data is not None:
                     config_key = mapping_data['key']
                     config_labels = mapping_data.get('labels', [])
 
                     # Check if a custom template is requested
-                    if item.get('template') == 'custom':
+                    if template_name == 'custom':
                         template_data = item
                     else:
                         # Load the template based on the template name
-                        template_data = load_template(item['template'])
+                        template_data = load_template(template_name)
 
                     # Populate the template with variables
                     template_data['fields']['project']['key'] = config_key
@@ -79,10 +92,17 @@ def create_jira_json(json_input):
 
                     jira_json_list.append(template_data)
 
+            # Print the generated Jira JSON list for confirmation
+            print("Generated Jira JSON List:")
+            print(json.dumps(jira_json_list, indent=4))
             return jira_json_list
     except Exception as e:
         print(f"An error occurred: {str(e)}")
         return None
+
+def add_attachment_to_jira(issue_key):
+    # Logic to add an attachment to the JIRA issue
+    # Implement this logic based on your requirements and JIRA API
 
 def create_jira(jira_json_list):
     auth = ('username', 'api_token')  # Replace with your Jira username and API token
@@ -96,6 +116,10 @@ def create_jira(jira_json_list):
         if response.status_code == 201:
             issue_key = response.json()["key"]
             issue_keys.append(issue_key)
+            
+            if tv.check_attachment(template):
+                add_attachment_to_jira(issue_key)  # Add attachment after JIRA creation
+
         else:
             raise Exception(f"Failed to create issue: {response.text}")
 

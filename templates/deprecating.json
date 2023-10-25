@@ -1,7 +1,8 @@
 {
     "validation": {
         "team": "team",
-        "filename": "filename"
+        "filename": "filename",
+        "attachment": true
     },
     "fields": {
         "project": {

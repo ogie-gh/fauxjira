@@ -1,35 +1,39 @@
 {
-  "fields": {
-    "project": {
-      "key": "{{team}}"
+    "validation": {
+        "team": "team",
+        "filename": "filename"
     },
-    "issuetype": {
-      "id": "10002"
-    },
-    "summary": "[AWS-LAMBDA-MONITOR] - Deprecating Lambda Functions",
-    "description": {
-      "version": 1,
-      "type": "doc",
-      "content": [
-        {
-          "type": "paragraph",
-          "content": [
-            {
-              "type": "text",
-              "text": "Please find below a list of soon be deprecated Lambda functions"
-            }
-          ]
+    "fields": {
+        "project": {
+            "key": "{{team}}"
         },
-        {
-          "type": "codeBlock",
-          "content": [
-            {
-              "type": "text",
-              "text": "{{csv_contents}}"
-            }
-          ]
+        "issuetype": {
+            "id": "10002"
+        },
+        "summary": "[AWS-LAMBDA-MONITOR] - Deprecating Lambda Functions",
+        "description": {
+            "version": 1,
+            "type": "doc",
+            "content": [
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "Please find below a list of soon to be deprecated Lambda functions"
+                        }
+                    ]
+                },
+                {
+                    "type": "codeBlock",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "{{csv_contents}}"
+                        }
+                    ]
+                }
+            ]
         }
-      ]
     }
-  }
 }
